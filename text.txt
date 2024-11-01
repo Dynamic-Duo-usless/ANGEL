@@ -1,0 +1,151 @@
+Wikipedia Search:
+
+Command: wikipedia <search term>
+Description: Searches Wikipedia for the specified term and reads the summary.
+Send Email:
+
+Command: send email
+Description: Prompts the user to dictate the email content and enter the recipient's email address to send an email.
+Open Chrome:
+
+Command: open chrome
+Description: Prompts the user for a search term and opens it in a new Chrome tab.
+Check CPU Usage:
+
+Command: cpu
+Description: Reports the current CPU and battery usage.
+Tell a Joke:
+
+Command: joke
+Description: Tells a random joke.
+Stop the Assistant:
+
+Command: stop
+Description: Shuts down the voice assistant.
+Take Screenshot:
+
+Command: screenshot
+Description: Captures a screenshot and saves it to the designated directory.
+Show Latest Screenshot:
+
+Command: show screenshot
+Description: Opens the latest screenshot taken.
+Play a Song:
+
+Command: play song
+Description: Plays a random song from the specified music directory.
+Open YouTube:
+
+Command: open youtube
+Description: Prompts the user for a search term and opens the results on YouTube.
+Open Google:
+
+Command: open google
+Description: Prompts the user for a search term and opens the results on Google.
+Locate a Place:
+
+Command: where is <location>
+Description: Opens Google Maps to locate the specified place.
+Calculate:
+
+Command: calculate <expression>
+Description: Uses Wolfram Alpha to calculate the specified mathematical expression.
+General Knowledge Query:
+
+Command: who is <person> or what is <topic>
+Description: Queries Wolfram Alpha for information about a person or topic.
+Close Current Tab:
+
+Command: close tab
+Description: Closes the current browser tab.
+Close Chrome:
+
+Command: close chrome
+Description: Closes the Chrome application.
+Start Object Detection:
+
+Command: start object detection
+Description: Initiates object detection using the webcam.
+Take a Note:
+
+Command: take note or write diary
+Description: Prompts the user to dictate a note, which is then saved to the diary directory.
+Open Latest Note:
+
+Command: open latest note
+Description: Opens the most recently saved diary note.Wikipedia Search:
+
+Command: wikipedia <search term>
+Description: Searches Wikipedia for the specified term and reads the summary.
+Send Email:
+
+Command: send email
+Description: Prompts the user to dictate the email content and enter the recipient's email address to send an email.
+Open Chrome:
+
+Command: open chrome
+Description: Prompts the user for a search term and opens it in a new Chrome tab.
+Check CPU Usage:
+
+Command: cpu
+Description: Reports the current CPU and battery usage.
+Tell a Joke:
+
+Command: joke
+Description: Tells a random joke.
+Stop the Assistant:
+
+Command: stop
+Description: Shuts down the voice assistant.
+Take Screenshot:
+
+Command: screenshot
+Description: Captures a screenshot and saves it to the designated directory.
+Show Latest Screenshot:
+
+Command: show screenshot
+Description: Opens the latest screenshot taken.
+Play a Song:
+
+Command: play song
+Description: Plays a random song from the specified music directory.
+Open YouTube:
+
+Command: open youtube
+Description: Prompts the user for a search term and opens the results on YouTube.
+Open Google:
+
+Command: open google
+Description: Prompts the user for a search term and opens the results on Google.
+Locate a Place:
+
+Command: where is <location>
+Description: Opens Google Maps to locate the specified place.
+Calculate:
+
+Command: calculate <expression>
+Description: Uses Wolfram Alpha to calculate the specified mathematical expression.
+General Knowledge Query:
+
+Command: who is <person> or what is <topic>
+Description: Queries Wolfram Alpha for information about a person or topic.
+Close Current Tab:
+
+Command: close tab
+Description: Closes the current browser tab.
+Close Chrome:
+
+Command: close chrome
+Description: Closes the Chrome application.
+Start Object Detection:
+
+Command: start object detection
+Description: Initiates object detection using the webcam.
+Take a Note:
+
+Command: take note or write diary
+Description: Prompts the user to dictate a note, which is then saved to the diary directory.
+Open Latest Note:
+
+Command: open latest note
+Description: Opens the most recently saved diary note.

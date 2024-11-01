@@ -2,22 +2,39 @@ import wikipedia  # pip install wikipedia
 import requests
 import pyttsx3
 import datetime
-from datetime import date
-import speech_recognition as sr
-import smtplib
-import webbrowser as wb
+import speech_recognition as sr  # pip install SpeechRecognition
 import os
-import psutil
-import pyjokes
-import pyautogui
+import smtplib
+import psutil  # pip install psutil
+import pyjokes  # pip install pyjokes
+import pyautogui  # pip install pyautogui
+import webbrowser as wb
 import random
-import wolframalpha
-import cv2
+import wolframalpha  # pip install wolframalpha
+import cv2  # pip install opencv-python
 import numpy as np
-from playsound import playsound
-from ultralytics import YOLO
-import supervision as sv
+from playsound import playsound  # pip install playsound
+from ultralytics import YOLO  # pip install ultralytics
+import supervision as sv  # pip install supervision
 import torch
+
+# Directory for screenshots
+screenshot_dir = "E:\\test1"
+if not os.path.exists(screenshot_dir):
+    os.makedirs(screenshot_dir)
+
+# Directory to save diary notes
+diary_dir = "E:\\diary_notes"
+if not os.path.exists(diary_dir):
+    os.makedirs(diary_dir)
+
+# Voice assistant initialization
+today = datetime.date.today()
+r = sr.Recognizer()
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+wolframalpha_app_id = "J3PX89-PL3RW48LPJ"  # Replace with your Wolfram Alpha App ID
 
 # YOLO Zone polygon for object detection
 ZONE_POLYGON = np.array([
@@ -27,46 +44,23 @@ ZONE_POLYGON = np.array([
     [0, 1]
 ])
 
-today = date.today()
-r = sr.Recognizer()
-engine = pyttsx3.init('sapi5')
-wolframalpha_app_id = "J3PX89-PL3RW48LPJ"  # Replace with your Wolfram Alpha App ID
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
-
-# Directory to save screenshots
-screenshot_dir = "E:\\test1"
-if not os.path.exists(screenshot_dir):
-    os.makedirs(screenshot_dir)
-
+# Speak function
 def speak(audio):
     engine.say(audio)
     engine.runAndWait()
 
-def time_():
-    Time = datetime.datetime.now().strftime("%I:%M:%S")
-    speak("The current time is")
-    speak(Time)
-
-def date_():
-    year = datetime.datetime.now().year
-    month = datetime.datetime.now().month
-    day = datetime.datetime.now().day
-    speak("The current date is")
-    speak(day)
-    speak(month)
-    speak(year)
-
+# Greeting function
 def wishme():
-    speak("Welcome back sir")
     hour = int(datetime.datetime.now().hour)
-    if hour >= 0 and hour < 12:
-        speak("Good Morning! I am Angel, how can I help you, sir?")
-    elif hour >= 12 and hour < 18:
-        speak("Good Afternoon! I am Angel, how can I help you, sir?")
+    if 0 <= hour < 12:
+        speak("Good Morning!")
+    elif 12 <= hour < 18:
+        speak("Good Afternoon!")
     else:
-        speak("Good Evening! I am Angel, how can I help you, sir?")
+        speak("Good Evening!")
+    speak("I am Angel, how can I help you, sir?")
 
+# Listening for voice command
 def TakeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -84,6 +78,7 @@ def TakeCommand():
         return "None"
     return query
 
+# Email function
 def sendEmail(to, content):
     try:
         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -96,6 +91,7 @@ def sendEmail(to, content):
     except Exception as e:
         speak("Unable to send email.")
 
+# Screenshot function
 def screenshot():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     screenshot_path = os.path.join(screenshot_dir, f"screenshot_{timestamp}.png")
@@ -103,6 +99,7 @@ def screenshot():
     img.save(screenshot_path)
     speak("Screenshot taken.")
 
+# Open latest screenshot
 def show_screenshot():
     screenshots = sorted(os.listdir(screenshot_dir), reverse=True)
     if screenshots:
@@ -113,6 +110,7 @@ def show_screenshot():
     else:
         speak("No screenshots available to show.")
 
+# CPU usage function
 def cpu():
     usage = str(psutil.cpu_percent())
     speak('CPU is at ' + usage)
@@ -120,13 +118,16 @@ def cpu():
     speak('Battery is at')
     speak(battery.percent)
 
+# Tell a joke
 def joke():
     speak(pyjokes.get_joke())
 
+# Close the current tab
 def close_tab():
     pyautogui.hotkey('ctrl', 'w')
     speak("Closed the current tab.")
 
+# Close a specified application
 def close_application(app_name):
     for proc in psutil.process_iter(attrs=['pid', 'name']):
         if proc.info['name'] == app_name:
@@ -135,71 +136,84 @@ def close_application(app_name):
             return
     speak(f"No running instance of {app_name} found.")
 
-# Start YOLOv8 object detection
+# Object Detection with YOLOv8 using Webcam
 def start_object_detection():
     speak("Starting object detection...")
     cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        speak("Unable to access the webcam.")
+        return
+
+    # Set resolution
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
-    model = YOLO("yolov8l.pt")
-
-    box_annotator = sv.BoxAnnotator(
-        thickness=2,
-        text_thickness=2,
-        text_scale=1
-    )
-
+    model = YOLO("yolov8l.pt")  # Load YOLOv8 model
+    
+    box_annotator = sv.BoxAnnotator(thickness=2, text_thickness=2, text_scale=1)
     zone_polygon = (ZONE_POLYGON * np.array([1280, 720])).astype(int)
     zone = sv.PolygonZone(polygon=zone_polygon, frame_resolution_wh=(1280, 720))
-    zone_annotator = sv.PolygonZoneAnnotator(
-        zone=zone, 
-        color=sv.Color.red(),
-        thickness=2,
-        text_thickness=4,
-        text_scale=2
-    )
+    zone_annotator = sv.PolygonZoneAnnotator(text_thickness=2, text_scale=2)
 
+    speak("Starting object detection. Press 'Esc' to exit.")
+    
     while True:
         ret, frame = cap.read()
+        if not ret:
+            speak("Failed to capture video frame.")
+            break
+
         result = model(frame, agnostic_nms=True)[0]
         detections = sv.Detections.from_yolov8(result)
+
         labels = [
             f"{model.model.names[class_id]} {confidence:0.2f}"
-            for _, confidence, class_id, _
-            in detections
+            for _, confidence, class_id, _ in detections
         ]
-        frame = box_annotator.annotate(
-            scene=frame, 
-            detections=detections, 
-            labels=labels
-        )
-
+        
+        frame = box_annotator.annotate(scene=frame, detections=detections, labels=labels)
         zone.trigger(detections=detections)
         frame = zone_annotator.annotate(scene=frame)
 
         cv2.imshow("YOLOv8 Object Detection", frame)
 
-        if (cv2.waitKey(30) == 27):  # Press 'Esc' to exit
+        if cv2.waitKey(30) == 27:  # Press 'Esc' to exit
             break
 
     cap.release()
     cv2.destroyAllWindows()
-    speak("Object detection stopped.")
+    speak("Object detection has ended.")
+
+# Diary Note Taking
+def take_note():
+    speak("What would you like to write in your diary?")
+    content = TakeCommand()
+    if content.lower() != "none":
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        note_path = os.path.join(diary_dir, f"note_{timestamp}.txt")
+        with open(note_path, "w") as file:
+            file.write(content)
+        speak("Your note has been saved.")
+    else:
+        speak("No content to save.")
+
+def open_latest_note():
+    notes = sorted(os.listdir(diary_dir), reverse=True)
+    if notes:
+        latest_note = os.path.join(diary_dir, notes[0])
+        os.startfile(latest_note)
+        speak("Here is your latest note.")
+    else:
+        speak("No notes available to show.")
 
 # Main program loop
 if __name__ == "__main__":
     wishme()
-
     while True:
         query = TakeCommand().lower()
 
-        if 'time' in query:
-            time_()
-        elif 'date' in query:
-            date_()
-        elif 'wikipedia' in query:
-            speak('Searching Wikipedia...')
+        if 'wikipedia' in query:
+            speak("Searching Wikipedia...")
             query = query.replace("wikipedia", "")
             result = wikipedia.summary(query, sentences=2)
             speak("According to Wikipedia")
@@ -223,7 +237,7 @@ if __name__ == "__main__":
             cpu()
         elif 'joke' in query:
             joke()
-        elif 'go offline' in query:
+        elif 'stop' in query:
             speak("Going offline, sir.")
             quit()
         elif 'screenshot' in query:
@@ -244,10 +258,10 @@ if __name__ == "__main__":
             search_Term = TakeCommand().lower()
             wb.open(f'https://www.google.com/search?q={search_Term}')
         elif 'where is' in query:
-            query = query.replace("where is", "")
-            location = query
-            speak("User asked to locate " + location)
-            wb.open_new_tab("https://www.google.com/maps/place/" + location)
+                query = query.replace("where is", "")
+                location = query
+                speak("User asked to locate " + location)
+                wb.open_new_tab("https://www.google.com/maps/place/" + location)
         elif 'calculate' in query:
             client = wolframalpha.Client(wolframalpha_app_id)
             indx = query.lower().split().index('calculate')
@@ -266,9 +280,13 @@ if __name__ == "__main__":
         elif 'close tab' in query:
             close_tab()
         elif 'close chrome' in query:
-                close_application('chrome.exe')
+            close_application('chrome.exe')
         elif 'start object detection' in query:
             start_object_detection()
+        elif 'take note' in query or 'write diary' in query:
+            take_note()
+        elif 'open notepad' in query or 'open latest note' in query:
+            open_latest_note()
         else:
             speak("I didn't understand. Can you repeat that, please?")
 
