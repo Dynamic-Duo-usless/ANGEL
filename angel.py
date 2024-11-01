@@ -15,6 +15,17 @@ import wolframalpha
 import cv2
 import numpy as np
 from playsound import playsound
+from ultralytics import YOLO
+import supervision as sv
+import torch
+
+# YOLO Zone polygon for object detection
+ZONE_POLYGON = np.array([
+    [0, 0],
+    [0.5, 0],
+    [0.5, 1],
+    [0, 1]
+])
 
 today = date.today()
 r = sr.Recognizer()
@@ -124,6 +135,58 @@ def close_application(app_name):
             return
     speak(f"No running instance of {app_name} found.")
 
+# Start YOLOv8 object detection
+def start_object_detection():
+    speak("Starting object detection...")
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
+    model = YOLO("yolov8l.pt")
+
+    box_annotator = sv.BoxAnnotator(
+        thickness=2,
+        text_thickness=2,
+        text_scale=1
+    )
+
+    zone_polygon = (ZONE_POLYGON * np.array([1280, 720])).astype(int)
+    zone = sv.PolygonZone(polygon=zone_polygon, frame_resolution_wh=(1280, 720))
+    zone_annotator = sv.PolygonZoneAnnotator(
+        zone=zone, 
+        color=sv.Color.red(),
+        thickness=2,
+        text_thickness=4,
+        text_scale=2
+    )
+
+    while True:
+        ret, frame = cap.read()
+        result = model(frame, agnostic_nms=True)[0]
+        detections = sv.Detections.from_yolov8(result)
+        labels = [
+            f"{model.model.names[class_id]} {confidence:0.2f}"
+            for _, confidence, class_id, _
+            in detections
+        ]
+        frame = box_annotator.annotate(
+            scene=frame, 
+            detections=detections, 
+            labels=labels
+        )
+
+        zone.trigger(detections=detections)
+        frame = zone_annotator.annotate(scene=frame)
+
+        cv2.imshow("YOLOv8 Object Detection", frame)
+
+        if (cv2.waitKey(30) == 27):  # Press 'Esc' to exit
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+    speak("Object detection stopped.")
+
 # Main program loop
 if __name__ == "__main__":
     wishme()
@@ -203,6 +266,9 @@ if __name__ == "__main__":
         elif 'close tab' in query:
             close_tab()
         elif 'close chrome' in query:
-            close_application('chrome.exe')
+                close_application('chrome.exe')
+        elif 'start object detection' in query:
+            start_object_detection()
         else:
             speak("I didn't understand. Can you repeat that, please?")
+
