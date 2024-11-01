@@ -1,4 +1,6 @@
-import wikipedia  # pip install wikipedia
+# Voice Assistant Code
+
+import wikipedia 
 import requests
 import pyttsx3
 import datetime
@@ -17,6 +19,7 @@ from playsound import playsound  # pip install playsound
 from ultralytics import YOLO  # pip install ultralytics
 import supervision as sv  # pip install supervision
 import torch
+import subprocess  # For opening Spotify
 
 # Directory for screenshots
 screenshot_dir = "E:\\test1"
@@ -34,7 +37,7 @@ r = sr.Recognizer()
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
-wolframalpha_app_id = "J3PX89-PL3RW48LPJ"  # Replace with your Wolfram Alpha App ID
+wolframalpha_app_id = "6YKJH2-45J43UPXHV"  # Replace with your Wolfram Alpha App ID
 
 # YOLO Zone polygon for object detection
 ZONE_POLYGON = np.array([
@@ -206,6 +209,11 @@ def open_latest_note():
     else:
         speak("No notes available to show.")
 
+# Play music on Spotify
+def play_music(song_name):
+    speak(f"Playing {song_name} on Spotify.")
+    subprocess.run(['spotify', song_name])
+
 # Main program loop
 if __name__ == "__main__":
     wishme()
@@ -244,11 +252,10 @@ if __name__ == "__main__":
             screenshot()
         elif 'show screenshot' in query:
             show_screenshot()
-        elif 'play song' in query:
-            songs_dir = 'D:/desktop/songs'
-            music = os.listdir(songs_dir)
-            song = random.choice(music)
-            os.startfile(os.path.join(songs_dir, song))
+        elif 'play music' in query:
+            speak("What song would you like to play?")
+            song_name = TakeCommand()
+            play_music(song_name)
         elif 'open youtube' in query:
             speak('What should I search?')
             search_Term = TakeCommand().lower()
@@ -289,4 +296,3 @@ if __name__ == "__main__":
             open_latest_note()
         else:
             speak("I didn't understand. Can you repeat that, please?")
-
