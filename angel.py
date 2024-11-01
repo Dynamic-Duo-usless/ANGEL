@@ -37,7 +37,7 @@ r = sr.Recognizer()
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
-wolframalpha_app_id = "6YKJH2-45J43UPXHV"  # Replace with your Wolfram Alpha App ID
+wolframalpha_app_id = "APP_ID"  # Replace with your Wolfram Alpha App ID
 
 # YOLO Zone polygon for object detection
 ZONE_POLYGON = np.array([
