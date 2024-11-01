@@ -12,9 +12,10 @@ import pyjokes
 import pyautogui
 import random
 import wolframalpha
+import cv2
+import numpy as np
 from playsound import playsound
 
-# -------------Object Initialization---------------
 today = date.today()
 r = sr.Recognizer()
 engine = pyttsx3.init('sapi5')
@@ -111,6 +112,19 @@ def cpu():
 def joke():
     speak(pyjokes.get_joke())
 
+def close_tab():
+    pyautogui.hotkey('ctrl', 'w')
+    speak("Closed the current tab.")
+
+def close_application(app_name):
+    for proc in psutil.process_iter(attrs=['pid', 'name']):
+        if proc.info['name'] == app_name:
+            proc.terminate()  # Use terminate instead of os.kill
+            speak(f"{app_name} has been closed.")
+            return
+    speak(f"No running instance of {app_name} found.")
+
+# Main program loop
 if __name__ == "__main__":
     wishme()
 
@@ -185,4 +199,10 @@ if __name__ == "__main__":
                 answer = next(res.results).text
                 speak(answer)
             except StopIteration:
-                speak("No results")
+                speak("No results found.")
+        elif 'close tab' in query:
+            close_tab()
+        elif 'close chrome' in query:
+            close_application('chrome.exe')
+        else:
+            speak("I didn't understand. Can you repeat that, please?")
